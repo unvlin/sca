@@ -1,0 +1,10 @@
+torch>=2.5
+transformers>=4.56
+trl>=0.24
+accelerate>=1.10
+datasets>=3.0
+deepspeed>=0.15
+openai>=1.0
+pandas>=2.0
+openpyxl>=3.1
+pyarrow>=15.0
