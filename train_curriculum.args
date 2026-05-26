@@ -1,0 +1,74 @@
+# SCA curriculum training config for the paper method.
+# Usage: python3 train_curriculum.py @configs/train_curriculum.args
+
+# Base model.
+--model 
+
+# Curriculum data. Each stage directory should contain train.jsonl/train.parquet
+# and a validation split such as val.jsonl/val.parquet.
+--data-root /path/to/sca/data/curriculum_by_stage
+--eval-data-root /path/to/sca/data/curriculum_by_stage
+--eval-split-name val
+
+# Outputs and logs.
+--output-root /path/to/sca/runs/curriculum
+--log-root /path/to/sca/runs/curriculum/logs
+
+# Three stages x 100 steps = 300 steps. Evaluation runs after every step.
+--stage-steps 100
+
+# SCA rewards and losses.
+--answer-align-lambda 0.1
+--answer-tolerance-band 32
+--think-margin 256
+--difficulty-scale 1.5
+
+# Structured think/answer boundaries.
+--think-start-boundary <think>
+--think-end-boundary </think>
+--answer-start-boundary ""
+--answer-end-boundary <|im_end|>
+
+# Rollouts and sequence lengths.
+--num-generations 32
+--max-prompt-length 2048
+--max-completion-length 32768
+--eval-max-completion-length 32768
+--steps-per-generation 1
+
+# Paper batch and optimizer settings.
+--per-device-train-batch-size 16
+--per-device-eval-batch-size 8
+--gradient-accumulation-steps 1
+--learning-rate 1e-5
+--seed 42
+
+# Decoding schedule.
+--temperature 0.7
+--temperature-start 1.3
+--temperature-end 0.7
+--top-p 0.95
+--top-k -1
+
+# Distributed training.
+--deepspeed configs/ds_zero2.json
+--gradient-checkpointing
+--bf16
+--logging-steps 1
+
+# Correctness judge for the training gate.
+# Provide credentials via environment variables instead of committing secrets.
+--judge-base-url http://127.0.0.1:8000/v1
+--judge-api-key-env JUDGER_API_KEY
+--judge-model /path/to/judge-model-or-served-name
+--judge-endpoint chat
+--judge-timeout-s 60
+--judge-max-tokens 4
+--judge-tokenizer-path /path/to/judge-tokenizer
+--judge-context-window 8192
+--judge-context-safety-tokens 128
+--judge-gold-token-budget 512
+--judge-max-pred-chars 4096
+--judge-max-gold-chars 1024
+--judge-truncate-side tail
+--judge-retries 3
